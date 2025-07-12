@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlucoScan - Diabetes App</title>
+    <title>GlucoScan AI - Intelligente Diabetes App</title>
     <style>
         * {
             margin: 0;
@@ -12,541 +12,674 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
             max-width: 400px;
             margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .header {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px 20px;
             text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1 )"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
         }
 
-        .header p {
-            font-size: 14px;
+        .header .subtitle {
+            font-size: 16px;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
-        .premium-badge {
-            background-color: #fbbf24;
-            color: #92400e;
-            padding: 4px 8px;
-            border-radius: 12px;
+        .ai-badge {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            margin: 15px auto 0;
             display: inline-block;
-            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+            animation: pulse 2s infinite;
         }
 
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
-        .card h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #1f2937;
+        .main-content {
+            padding: 30px 20px;
         }
 
-        .button {
-            background-color: #2563eb;
+        .camera-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        #video {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(255,255,255,0.8);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .camera-overlay::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 2px solid #2563eb;
+            border-radius: 15px;
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            margin: 8px;
+            min-width: 140px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
-        .button:hover {
-            background-color: #1d4ed8;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
 
-        .button-secondary {
-            background-color: #6b7280;
+        .btn:active {
+            transform: translateY(0);
         }
 
-        .button-secondary:hover {
-            background-color: #4b5563;
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
 
-        .input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 10px;
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
-        .video {
-            width: 100%;
-            height: 200px;
-            background-color: #000;
-            border-radius: 8px;
-            margin-bottom: 10px;
+        .btn-ai {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        .product-info {
-            background-color: #ecfdf5;
-            border: 1px solid #10b981;
-            border-radius: 8px;
+        .btn-ai:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-ai::before {
+            content: '🤖';
+            margin-right: 8px;
+        }
+
+        .results-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .food-result {
+            background: white;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #2563eb;
         }
 
-        .product-name {
+        .food-name {
             font-size: 18px;
             font-weight: bold;
-            color: #065f46;
-            margin-bottom: 10px;
+            color: #1f2937;
+            margin-bottom: 8px;
         }
 
-        .nutrition-grid {
+        .nutrition-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 15px;
+            margin: 10px 0;
         }
 
         .nutrition-item {
-            background: white;
-            padding: 10px;
-            border-radius: 6px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 8px;
             text-align: center;
-        }
-
-        .nutrition-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 5px;
         }
 
         .nutrition-value {
             font-size: 16px;
             font-weight: bold;
-            color: #1f2937;
+            color: #2563eb;
+        }
+
+        .nutrition-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .insulin-section {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
         }
 
         .insulin-result {
-            background-color: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .insulin-text {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
-            color: #92400e;
+            margin: 10px 0;
         }
 
-        .ad-banner {
-            background-color: #fee2e2;
-            border: 1px solid #fca5a5;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .ad-text {
-            font-size: 14px;
-            color: #991b1b;
-            margin-bottom: 10px;
-        }
-
-        .upgrade-button {
-            background-color: #fbbf24;
-            color: #92400e;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
+        .loading {
             display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            max-width: 350px;
             text-align: center;
+            padding: 20px;
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #1f2937;
+        .loading.show {
+            display: block;
         }
 
-        .modal-text {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 20px;
-            line-height: 1.5;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
         }
 
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .modal-button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
         }
 
-        .modal-button-primary {
-            background-color: #fbbf24;
-            color: #92400e;
+        .error-message.show {
+            display: block;
         }
 
-        .modal-button-secondary {
-            background-color: #e5e7eb;
+        .manual-input {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
             color: #374151;
         }
 
-        .hidden {
-            display: none;
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
 
-        .divider {
-            margin: 20px 0;
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .footer {
             text-align: center;
-            color: #6b7280;
+            padding: 20px;
+            color: #64748b;
             font-size: 14px;
+        }
+
+        .api-status {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                border-radius: 15px;
+            }
+            
+            .btn {
+                min-width: 120px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .nutrition-info {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>GlucoScan</h1>
-            <p>Diabetes-App für Lebensmittel-Scanning</p>
-            <div id="premiumBadge" class="premium-badge hidden">Premium</div>
+            <h1>🍎 GlucoScan AI</h1>
+            <p class="subtitle">Intelligente Diabetes-Unterstützung</p>
+            <div class="ai-badge">🤖 KI-POWERED</div>
         </div>
 
-        <div id="adBanner" class="ad-banner">
-            <div class="ad-text">
-                🍎 Gesunde Ernährung für Diabetiker - Jetzt entdecken!
-            </div>
-            <button class="upgrade-button" onclick="showPremiumModal()">
-                Werbefrei upgraden
-            </button>
-        </div>
-
-        <div class="card">
-            <h2>Barcode Scanner</h2>
-            
-            <div id="scannerSection">
-                <video id="video" class="video hidden" autoplay playsinline></video>
-                
-                <button id="startCameraBtn" class="button" onclick="startCamera()">
-                    Kamera starten
-                </button>
-                
-                <button id="simulateScanBtn" class="button hidden" onclick="simulateBarcodeScan()">
-                    Scan simulieren
-                </button>
-                
-                <button id="stopCameraBtn" class="button-secondary button hidden" onclick="stopCamera()">
-                    Scanner beenden
-                </button>
-                
-                <div class="divider">oder</div>
-                
-                <input id="manualBarcode" class="input" type="text" placeholder="Barcode manuell eingeben">
-                <button class="button" onclick="handleManualSearch()">
-                    Produkt suchen
-                </button>
-            </div>
-        </div>
-
-        <div id="productResult" class="card hidden">
-            <div class="product-info">
-                <div id="productName" class="product-name"></div>
-                
-                <div class="nutrition-grid">
-                    <div class="nutrition-item">
-                        <div class="nutrition-label">Kohlenhydrate</div>
-                        <div id="carbs" class="nutrition-value"></div>
-                    </div>
-                    <div class="nutrition-item">
-                        <div class="nutrition-label">Kalorien</div>
-                        <div id="calories" class="nutrition-value"></div>
-                    </div>
-                    <div class="nutrition-item">
-                        <div class="nutrition-label">Fett</div>
-                        <div id="fat" class="nutrition-value"></div>
-                    </div>
-                    <div class="nutrition-item">
-                        <div class="nutrition-label">Protein</div>
-                        <div id="protein" class="nutrition-value"></div>
-                    </div>
+        <div class="main-content">
+            <!-- Kamera Sektion -->
+            <div class="camera-section">
+                <div class="camera-container">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="camera-overlay"></div>
                 </div>
-
-                <div class="insulin-result">
-                    <div id="insulinUnits" class="insulin-text"></div>
+                <canvas id="canvas"></canvas>
+                
+                <div>
+                    <button class="btn" id="startCamera">📷 Kamera starten</button>
+                    <button class="btn btn-ai" id="capturePhoto" style="display:none;">🔍 Lebensmittel scannen</button>
                 </div>
             </div>
+
+            <!-- API Status -->
+            <div class="api-status">
+                ⚠️ Demo-Modus: Verwendet Beispieldaten für Lebensmittelerkennung
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>🤖 KI analysiert Ihr Lebensmittel...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Ergebnisse -->
+            <div class="results-section" id="results">
+                <h3>🎯 Erkannte Lebensmittel</h3>
+                <div id="foodResults"></div>
+            </div>
+
+            <!-- Insulin Berechnung -->
+            <div class="insulin-section" id="insulinSection" style="display:none;">
+                <h3>💉 Insulin-Empfehlung</h3>
+                <div class="insulin-result" id="insulinResult"></div>
+                <p>Basierend auf erkannten Kohlenhydraten</p>
+            </div>
+
+            <!-- Manuelle Eingabe -->
+            <div class="manual-input">
+                <h3>✏️ Manuelle Eingabe</h3>
+                <div class="input-group">
+                    <label for="manualCarbs">Kohlenhydrate (g):</label>
+                    <input type="number" id="manualCarbs" placeholder="z.B. 45" min="0" max="200">
+                </div>
+                <div class="input-group">
+                    <label for="insulinRatio">Insulin-Kohlenhydrat-Verhältnis (1:X):</label>
+                    <input type="number" id="insulinRatio" placeholder="z.B. 10" min="1" max="50" value="10">
+                </div>
+                <button class="btn btn-secondary" id="calculateInsulin">💉 Insulin berechnen</button>
+            </div>
         </div>
 
-        <div id="adBanner2" class="ad-banner">
-            <div class="ad-text">
-                📱 Weitere Diabetes-Apps entdecken - Kostenlos testen!
-            </div>
-            <button class="upgrade-button" onclick="showPremiumModal()">
-                Werbefrei upgraden
-            </button>
-        </div>
-    </div>
-
-    <!-- Premium Modal -->
-    <div id="premiumModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Premium Upgrade</h3>
-            <p class="modal-text">
-                Upgraden Sie zu Premium für nur 1,99€ und genießen Sie:<br>
-                • Werbefreie Nutzung<br>
-                • Erweiterte Statistiken<br>
-                • Export-Funktionen
-            </p>
-            <div class="modal-buttons">
-                <button class="modal-button modal-button-primary" onclick="upgradeToPremium()">
-                    Upgraden (1,99€)
-                </button>
-                <button class="modal-button modal-button-secondary" onclick="closePremiumModal()">
-                    Später
-                </button>
-            </div>
+        <div class="footer">
+            <p>🏥 Konsultieren Sie immer Ihren Arzt</p>
+            <p>Diese App ersetzt keine medizinische Beratung</p>
         </div>
     </div>
 
     <script>
-        // App State
-        let isPremium = false;
-        let isScanning = false;
+        // Globale Variablen
         let stream = null;
+        let isProcessing = false;
 
-        // Produktdatenbank
-        const productDatabase = {
-            '4063367419102': {
-                name: 'Dr. Oetker Ristorante Pizza Salame',
-                carbs: 28.5,
-                calories: 267,
-                fat: 11.2,
-                protein: 12.8
-            },
-            '4000417025005': {
-                name: 'Nutella Nuss-Nougat-Creme',
-                carbs: 56.3,
-                calories: 539,
-                fat: 30.9,
-                protein: 6.3
-            },
-            '4025500021603': {
-                name: 'Haribo Goldbären',
-                carbs: 77,
-                calories: 343,
-                fat: 0.5,
-                protein: 6.9
-            },
-            '4008400402628': {
-                name: 'Knorr Nudeln in Käse-Sahne-Sauce',
-                carbs: 65,
-                calories: 378,
-                fat: 4.2,
-                protein: 12
-            }
+        // DOM Elemente
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startCameraBtn = document.getElementById('startCamera');
+        const captureBtn = document.getElementById('capturePhoto');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const results = document.getElementById('results');
+        const foodResults = document.getElementById('foodResults');
+        const insulinSection = document.getElementById('insulinSection');
+        const insulinResult = document.getElementById('insulinResult');
+        const manualCarbs = document.getElementById('manualCarbs');
+        const insulinRatio = document.getElementById('insulinRatio');
+        const calculateBtn = document.getElementById('calculateInsulin');
+
+        // Beispiel-Lebensmitteldatenbank (Demo-Daten)
+        const foodDatabase = {
+            'apple': { name: 'Apfel', carbs: 25, calories: 95, fiber: 4, sugar: 19 },
+            'banana': { name: 'Banane', carbs: 27, calories: 105, fiber: 3, sugar: 14 },
+            'bread': { name: 'Brot (1 Scheibe)', carbs: 15, calories: 80, fiber: 2, sugar: 1 },
+            'pasta': { name: 'Nudeln (gekocht)', carbs: 45, calories: 220, fiber: 2, sugar: 1 },
+            'rice': { name: 'Reis (gekocht)', carbs: 45, calories: 205, fiber: 1, sugar: 0 },
+            'potato': { name: 'Kartoffel (mittel)', carbs: 37, calories: 161, fiber: 4, sugar: 2 },
+            'orange': { name: 'Orange', carbs: 15, calories: 62, fiber: 3, sugar: 12 },
+            'sandwich': { name: 'Sandwich', carbs: 30, calories: 250, fiber: 3, sugar: 4 },
+            'pizza': { name: 'Pizza (1 Stück)', carbs: 36, calories: 285, fiber: 2, sugar: 4 },
+            'salad': { name: 'Gemischter Salat', carbs: 8, calories: 65, fiber: 3, sugar: 5 }
         };
 
-        // Insulin-Berechnung
-        function calculateInsulinUnits(carbs) {
-            return Math.round(carbs / 10);
-        }
+        // Event Listeners
+        startCameraBtn.addEventListener('click', startCamera);
+        captureBtn.addEventListener('click', capturePhoto);
+        calculateBtn.addEventListener('click', calculateManualInsulin);
 
-        // Kamera-Funktionen
+        // Kamera starten
         async function startCamera() {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
                 });
-                
-                const video = document.getElementById('video');
                 video.srcObject = stream;
-                video.classList.remove('hidden');
-                
-                document.getElementById('startCameraBtn').classList.add('hidden');
-                document.getElementById('simulateScanBtn').classList.remove('hidden');
-                document.getElementById('stopCameraBtn').classList.remove('hidden');
-                
-                isScanning = true;
+                startCameraBtn.style.display = 'none';
+                captureBtn.style.display = 'inline-block';
+                hideError();
             } catch (error) {
-                console.error('Kamera-Zugriff fehlgeschlagen:', error);
-                alert('Kamera-Zugriff nicht möglich. Bitte verwenden Sie die manuelle Eingabe.');
+                showError('Kamera konnte nicht gestartet werden. Bitte überprüfen Sie die Berechtigungen.');
+                console.error('Kamera-Fehler:', error);
             }
         }
 
-        function stopCamera() {
+        // Foto aufnehmen und analysieren
+        async function capturePhoto() {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            showLoading();
+            hideError();
+            hideResults();
+
+            try {
+                // Canvas auf Video-Größe setzen
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Foto aufnehmen
+                ctx.drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+                // Simuliere KI-Analyse (in echter App würde hier API-Call stattfinden)
+                await simulateAIAnalysis(imageData);
+
+            } catch (error) {
+                showError('Fehler bei der Bildanalyse: ' + error.message);
+                console.error('Analyse-Fehler:', error);
+            } finally {
+                hideLoading();
+                isProcessing = false;
+            }
+        }
+
+        // Simuliere KI-Lebensmittelerkennung (Demo)
+        async function simulateAIAnalysis(imageData) {
+            // Simuliere API-Verzögerung
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Zufällige Lebensmittel für Demo
+            const foodKeys = Object.keys(foodDatabase);
+            const randomFood = foodKeys[Math.floor(Math.random() * foodKeys.length)];
+            const detectedFood = foodDatabase[randomFood];
+
+            // Simuliere Konfidenz
+            const confidence = Math.floor(Math.random() * 30) + 70; // 70-99%
+
+            displayFoodResults([{
+                name: detectedFood.name,
+                confidence: confidence,
+                nutrition: detectedFood
+            }]);
+        }
+
+        // Ergebnisse anzeigen
+        function displayFoodResults(foods) {
+            foodResults.innerHTML = '';
+            let totalCarbs = 0;
+
+            foods.forEach(food => {
+                totalCarbs += food.nutrition.carbs;
+
+                const foodDiv = document.createElement('div');
+                foodDiv.className = 'food-result';
+                foodDiv.innerHTML = `
+                    <div class="food-name">${food.name}</div>
+                    <div style="color: #10b981; font-size: 14px; margin-bottom: 10px;">
+                        Konfidenz: ${food.confidence}%
+                    </div>
+                    <div class="nutrition-info">
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">${food.nutrition.carbs}g</div>
+                            <div class="nutrition-label">Kohlenhydrate</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">${food.nutrition.calories}</div>
+                            <div class="nutrition-label">Kalorien</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">${food.nutrition.fiber}g</div>
+                            <div class="nutrition-label">Ballaststoffe</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value">${food.nutrition.sugar}g</div>
+                            <div class="nutrition-label">Zucker</div>
+                        </div>
+                    </div>
+                `;
+                foodResults.appendChild(foodDiv);
+            });
+
+            // Insulin-Empfehlung berechnen
+            if (totalCarbs > 0) {
+                const ratio = parseInt(insulinRatio.value) || 10;
+                const insulinUnits = Math.round((totalCarbs / ratio) * 10) / 10;
+                
+                insulinResult.textContent = `${insulinUnits} Einheiten`;
+                insulinSection.style.display = 'block';
+            }
+
+            showResults();
+        }
+
+        // Manuelle Insulin-Berechnung
+        function calculateManualInsulin() {
+            const carbs = parseFloat(manualCarbs.value);
+            const ratio = parseFloat(insulinRatio.value);
+
+            if (!carbs || !ratio) {
+                showError('Bitte geben Sie gültige Werte ein.');
+                return;
+            }
+
+            if (carbs < 0 || carbs > 200) {
+                showError('Kohlenhydrate müssen zwischen 0 und 200g liegen.');
+                return;
+            }
+
+            if (ratio < 1 || ratio > 50) {
+                showError('Insulin-Verhältnis muss zwischen 1 und 50 liegen.');
+                return;
+            }
+
+            const insulinUnits = Math.round((carbs / ratio) * 10) / 10;
+            
+            // Zeige Ergebnis in der manuellen Sektion
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'insulin-section';
+            resultDiv.innerHTML = `
+                <h3>💉 Berechnetes Insulin</h3>
+                <div class="insulin-result">${insulinUnits} Einheiten</div>
+                <p>Für ${carbs}g Kohlenhydrate (Verhältnis 1:${ratio})</p>
+            `;
+
+            // Entferne vorherige Ergebnisse
+            const existingResult = document.querySelector('.manual-input .insulin-section');
+            if (existingResult) {
+                existingResult.remove();
+            }
+
+            document.querySelector('.manual-input').appendChild(resultDiv);
+            hideError();
+        }
+
+        // Hilfsfunktionen
+        function showLoading() {
+            loading.classList.add('show');
+        }
+
+        function hideLoading() {
+            loading.classList.remove('show');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+
+        function showResults() {
+            results.classList.add('show');
+        }
+
+        function hideResults() {
+            results.classList.remove('show');
+            insulinSection.style.display = 'none';
+        }
+
+        // Cleanup beim Verlassen der Seite
+        window.addEventListener('beforeunload', () => {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            
-            const video = document.getElementById('video');
-            video.classList.add('hidden');
-            
-            document.getElementById('startCameraBtn').classList.remove('hidden');
-            document.getElementById('simulateScanBtn').classList.add('hidden');
-            document.getElementById('stopCameraBtn').classList.add('hidden');
-            
-            isScanning = false;
-        }
-
-        function simulateBarcodeScan() {
-            const barcodes = Object.keys(productDatabase);
-            const randomBarcode = barcodes[Math.floor(Math.random() * barcodes.length)];
-            handleProductFound(randomBarcode);
-        }
-
-        function handleManualSearch() {
-            const barcode = document.getElementById('manualBarcode').value.trim();
-            if (barcode) {
-                handleProductFound(barcode);
-            }
-        }
-
-        async function handleProductFound(barcode) {
-            stopCamera();
-            
-            let product = productDatabase[barcode];
-            
-            if (!product) {
-                try {
-                    const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-                    const data = await response.json();
-                    
-                    if (data.status === 1 && data.product) {
-                        const p = data.product;
-                        product = {
-                            name: p.product_name || 'Unbekanntes Produkt',
-                            carbs: p.nutriments?.carbohydrates_100g || 0,
-                            calories: p.nutriments?.energy_kcal_100g || 0,
-                            fat: p.nutriments?.fat_100g || 0,
-                            protein: p.nutriments?.proteins_100g || 0
-                        };
-                    }
-                } catch (error) {
-                    console.error('API-Fehler:', error);
-                }
-            }
-
-            if (product) {
-                displayProduct(product);
-            } else {
-                alert('Produkt nicht gefunden. Bitte versuchen Sie es erneut.');
-            }
-            
-            document.getElementById('manualBarcode').value = '';
-        }
-
-        function displayProduct(product) {
-            document.getElementById('productName').textContent = product.name;
-            document.getElementById('carbs').textContent = product.carbs + 'g';
-            document.getElementById('calories').textContent = product.calories;
-            document.getElementById('fat').textContent = product.fat + 'g';
-            document.getElementById('protein').textContent = product.protein + 'g';
-            
-            const insulinUnits = calculateInsulinUnits(product.carbs);
-            document.getElementById('insulinUnits').textContent = `💉 ${insulinUnits} Insulin-Einheiten`;
-            
-            document.getElementById('productResult').classList.remove('hidden');
-        }
-
-        // Premium-Funktionen
-        function showPremiumModal() {
-            document.getElementById('premiumModal').classList.add('show');
-        }
-
-        function closePremiumModal() {
-            document.getElementById('premiumModal').classList.remove('show');
-        }
-
-        function upgradeToPremium() {
-            isPremium = true;
-            document.getElementById('premiumBadge').classList.remove('hidden');
-            document.getElementById('adBanner').classList.add('hidden');
-            document.getElementById('adBanner2').classList.add('hidden');
-            closePremiumModal();
-            alert('Premium aktiviert! (Demo-Modus)');
-        }
-
-        // Event Listeners
-        document.getElementById('manualBarcode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleManualSearch();
             }
         });
 
-        // Modal schließen bei Klick außerhalb
-        document.getElementById('premiumModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePremiumModal();
-            }
-        });
+        // Service Worker für PWA (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
     </script>
 </body>
 </html>
-
